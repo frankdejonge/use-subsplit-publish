@@ -63,8 +63,15 @@ async function ensureRemoteExists(name, target) {
 
 async function publishSubSplit(binary, origin, branch, name, directory) {
     // SHA1=`./bin/splitsh-lite --prefix=$1 --origin=origin/$CURRENT_BRANCH`
-    let hash = await exec(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`]);
-    console.log('hash', hash);
+    let output = '';
+    let hash = await exec(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`], {
+        listeners: {
+            stdout: (data) => {
+                output += data.toString();
+            }
+        }
+    });
+    console.log('hash', hash, output);
 }
 
 (async () => {
