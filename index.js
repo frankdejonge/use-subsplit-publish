@@ -66,7 +66,7 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
     await exec(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`], {
         listeners: {
             stdout: (data) => {
-                output += data.toString();
+                hash += data.toString();
             }
         }
     });
