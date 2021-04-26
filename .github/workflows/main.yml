@@ -11,7 +11,7 @@ jobs:
       - name: Cache multiple paths
         uses: actions/cache@v2
         with:
-          path: ./temp
+          path: ./temp/splitsh-lite
           key: ${{ runner.os }}-splitsh-lite
 
       - uses: actions/checkout@v1
