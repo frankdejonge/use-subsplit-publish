@@ -1,0 +1,21 @@
+name: 'Sub-split Publish'
+description: 'Publish git repository sub-splits using splish-lite'
+inputs:
+    config-path:
+        required: true
+        description: 'Path for sub-split config'
+    splitsh-version:
+        default: v1.0.1
+        description: 'Version of splitsh to install'
+        required: false
+    splitsh-path:
+        description: 'Path to install splitsh'
+        default: '/tmp/splitsh-lite'
+        required: false
+branding:
+    icon: external-link
+    color: purple
+runs:
+    using: 'node12'
+    main: 'dist/start.js'
+    post: 'dist/stop.js'

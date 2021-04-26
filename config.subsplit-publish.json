@@ -1,0 +1,10 @@
+{
+    "source-branch": "main",
+    "sub-splits": [
+        {
+            "name": "workflows",
+            "directory": ".github/workflows",
+            "target": "git@github.com:frankdejonge/example-subsplit-publish.git"
+        }
+    ]
+}

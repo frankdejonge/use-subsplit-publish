@@ -1,0 +1,12 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  use_ssh_agent:
+    runs-on: ubuntu-latest
+    name: Start an SSH Agent
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ./
