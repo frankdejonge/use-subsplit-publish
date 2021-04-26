@@ -70,8 +70,7 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
             }
         }
     });
-    console.log('hash', hash.trim());
-    await exec('git', ['push', target, `${hash}:refs/heads/${branch}`, '-f']);
+    await exec('git', ['push', target, `${hash.trim()}:refs/heads/${branch}`, '-f']);
 }
 
 (async () => {
