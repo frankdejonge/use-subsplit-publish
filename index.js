@@ -82,10 +82,10 @@ async function publishSubSplit(binary, origin, branch, name, directory) {
     let subSplits = configOptions['sub-splits'];
     console.log(subSplits);
 
-    // await Promise.all(subSplits.map(async (split) => {
-    //     await ensureRemoteExists(split.name, split.target);
-    //     await publishSubSplit(splitshPath, origin, branch, split.name, split.directory);
-    // }));
+    await Promise.all(subSplits.map(async (split) => {
+        await ensureRemoteExists(split.name, split.target);
+        await publishSubSplit(splitshPath, origin, branch, split.name, split.directory);
+    }));
 })().catch(error => {
     console.log('Something went wrong...');
     core.setFailed(error.message);
