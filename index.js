@@ -1,7 +1,7 @@
-import * as core from '@actions/core';
-import { exec } from '@actions/exec';
-import * as fs from 'fs';
-import * as path from 'path';
+const core = require('@actions/core');
+const exec = require('@actions/exec').exec;
+const fs = require('fs');
+const path = require('path');
 
 function ensureDirExists(path) {
     try {
