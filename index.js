@@ -71,8 +71,7 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
         }
     });
     console.log('hash', hash);
-    console.log('git', 'push', target, `${hash}:refs/heads/${branch}`, '-f');
-    // await exec('git', ['push', target, `${hash}:refs/heads/${branch}`, '-f']);
+    await exec('git', ['push', target, `${hash}:refs/heads/${branch}`, '-f']);
 }
 
 (async () => {
