@@ -18,7 +18,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '~/splitsh-lite'
-          key: '${{ runner.os }}-splitsh-lite'
+          key: '${{ runner.os }}-splitsh'
 
       - uses: actions/checkout@v1
 
