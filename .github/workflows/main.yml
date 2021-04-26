@@ -6,7 +6,7 @@ on:
 jobs:
   use_ssh_agent:
     runs-on: ubuntu-latest
-    name: Start an SSH Agent
+    name: Publish Sub-split
     steps:
       - uses: actions/checkout@v1
       - uses: ./

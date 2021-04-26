@@ -5,9 +5,7 @@
     "node": "12"
   },
   "scripts": {
-    "package": "npm run package:start && npm run package:stop",
-    "package:start": "ncc build start.js -C -o dist --minify && mv dist/index.js dist/start.js",
-    "package:stop": "ncc build stop.js -C -o dist --minify && mv dist/index.js dist/stop.js"
+    "package": "ncc build index.js -C -o dist --minify"
   },
   "dependencies": {
     "@actions/core": "^1.2.7",

@@ -17,5 +17,4 @@ branding:
     color: purple
 runs:
     using: 'node12'
-    main: 'dist/start.js'
-    post: 'dist/stop.js'
+    main: 'dist/index.js'
