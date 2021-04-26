@@ -47,7 +47,7 @@ async function downloadSplitsh(splitshPath, splitshVersion) {
     await exec(`wget -O ${downloadPath} ${url}`);
     await exec(`tar -zxpf ${downloadPath} --directory ${downloadDir}`);
     await exec(`chmod +x ${downloadDir}splitsh-lite`);
-    await exec(`mv ${downloadPath}splitsh-lite ${splitshPath}`);
+    await exec(`mv ${downloadDir}splitsh-lite ${splitshPath}`);
     ensureDirIsRemoved(downloadDir);
 }
 
