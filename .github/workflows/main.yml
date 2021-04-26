@@ -8,6 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish Sub-split
     steps:
+      - uses: frankdejonge/use-github-token
+        with:
+          authentication: 'frankdejonge:${{ secrets.PERSONAL_GITHUB_TOKEN }}'
+          name: 'Frank de Jonge'
+          email: 'info@frankdejonge.nl'
       - name: Cache multiple paths
         uses: actions/cache@v2
         with:
