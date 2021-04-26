@@ -80,7 +80,9 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
     const origin = core.getInput('origin-remote');
     const branch = core.getInput('source-branch');
 
+    console.log('checking if file exists' + splitshPath);
     if ( ! fs.existsSync(splitshPath)) {
+        console.log('file does not exist');
         await downloadSplitsh(splitshPath, splitshVersion);
     }
 
