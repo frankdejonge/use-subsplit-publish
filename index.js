@@ -41,13 +41,13 @@ async function downloadSplitsh(splitshPath, splitshVersion) {
     fs.mkdirSync('/tmp/splitsh-download/');
     let downloadDir = '/tmp/splitsh-download/';
     let downloadPath = `${downloadDir}split-lite.tar.gz`;
-    let platform = process.platform === 'darwin' ? 'lite_linux_amd64' : 'lite_linux_amd64';
+    let platform = process.platform === 'darwin' ? 'lite_darwin_amd64' : 'lite_linux_amd64';
     console.log(`downloading variant ${platform}`);
     let url = `https://github.com/splitsh/lite/releases/download/${splitshVersion}/${platform}.tar.gz`;
     await exec(`wget -O ${downloadPath} ${url}`);
     await exec(`tar -zxpf ${downloadPath} --directory ${downloadDir}`);
-    await exec(`chmod +x ${downloadPath}`);
-    await exec(`mv ${downloadPath} ${splitshPath}`);
+    await exec(`chmod +x ${downloadDir}splitsh-lite`);
+    await exec(`mv ${downloadPath}splitsh-lite ${splitshPath}`);
     ensureDirIsRemoved(downloadDir);
 }
 
