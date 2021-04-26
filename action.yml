@@ -9,9 +9,16 @@ inputs:
         description: 'Version of splitsh to install'
         required: false
     splitsh-path:
-        description: 'Path to install splitsh'
-        default: '/tmp/splitsh-lite'
+        description: 'Path to install splitsh-lite'
+        default: '~/splitsh-lite'
         required: false
+    origin-remote:
+        description: 'Name of the origin remote'
+        default: 'origin'
+        required: false
+    source-branch:
+        description: 'Branch to split from'
+        required: true
 branding:
     icon: external-link
     color: purple

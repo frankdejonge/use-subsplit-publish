@@ -74,11 +74,11 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
 }
 
 (async () => {
-    const configPath = './config.subsplit-publish.json'; // core.getInput('config-path');
-    const splitshPath = './temp/splitsh-lite';// core.getInput('splitsh-path');
-    const splitshVersion  = 'v1.0.1'; // core.getInput('splitsh-version');
-    const origin = 'origin';
-    const branch = 'main';
+    const configPath = core.getInput('config-path');
+    const splitshPath = core.getInput('splitsh-path');
+    const splitshVersion = core.getInput('splitsh-version');
+    const origin = core.getInput('origin-remote');
+    const branch = core.getInput('source-branch');
 
     if ( ! fs.existsSync(splitshPath)) {
         await downloadSplitsh(splitshPath, splitshVersion);
