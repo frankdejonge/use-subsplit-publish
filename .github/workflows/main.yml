@@ -8,5 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish Sub-split
     steps:
+      - name: Cache multiple paths
+        uses: actions/cache@v2
+        with:
+          path: ./temp
+          key: ${{ runner.os }}-splitsh-lite
+
       - uses: actions/checkout@v1
       - uses: ./

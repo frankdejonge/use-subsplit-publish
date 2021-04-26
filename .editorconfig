@@ -2,5 +2,5 @@
 indent_size = 4
 indent_style = space
 
-[package.json]
+[{package.json,.github/**/*.yml}]
 indent_size = 2
