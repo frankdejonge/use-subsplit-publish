@@ -61,7 +61,7 @@ async function ensureRemoteExists(name, target) {
     }
 }
 
-async function publishSubSplit(binary, origin, branch, name, directory) {
+async function publishSubSplit(binary, origin, target, branch, name, directory) {
     let hash = '';
     await exec(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`], {
         listeners: {
@@ -71,7 +71,8 @@ async function publishSubSplit(binary, origin, branch, name, directory) {
         }
     });
     console.log('hash', hash);
-    await exec('git', ['push', origin, `${hash}:refs/heads/${branch}`, '-f']);
+    console.log('git', 'push', target, `${hash}:refs/heads/${branch}`, '-f');
+    // await exec('git', ['push', target, `${hash}:refs/heads/${branch}`, '-f']);
 }
 
 (async () => {
@@ -91,7 +92,7 @@ async function publishSubSplit(binary, origin, branch, name, directory) {
 
     await Promise.all(subSplits.map(async (split) => {
         await ensureRemoteExists(split.name, split.target);
-        await publishSubSplit(splitshPath, origin, branch, split.name, split.directory);
+        await publishSubSplit(splitshPath, origin, split.targetΩ, branch, split.name, split.directory);
     }));
 })().catch(error => {
     console.log('Something went wrong...');
