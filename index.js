@@ -41,7 +41,8 @@ async function downloadSplitsh(splitshPath, splitshVersion) {
     fs.mkdirSync('/tmp/splitsh-download/');
     let downloadDir = '/tmp/splitsh-download/';
     let downloadPath = `${downloadDir}split-lite.tar.gz`;
-    let platform = process.platform === 'darwin' ? 'lite_darwin_amd64' : 'lite_linus_amd64';
+    let platform = process.platform === 'darwin' ? 'lite_linux_amd64' : 'lite_linux_amd64';
+    console.log(`downloading variant ${platform}`);
     let url = `https://github.com/splitsh/lite/releases/download/${splitshVersion}/${platform}.tar.gz`;
     await exec(`wget -O ${downloadPath} ${url}`);
     await exec(`tar -zxpf ${downloadPath} --directory ${downloadDir}`);
@@ -60,14 +61,18 @@ async function ensureRemoteExists(name, target) {
     }
 }
 
-async function publishSubSplit(name, directory) {
-    let hash = await exec()
+async function publishSubSplit(binary, origin, branch, name, directory) {
+    // SHA1=`./bin/splitsh-lite --prefix=$1 --origin=origin/$CURRENT_BRANCH`
+    let hash = await exec(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`]);
+    console.log('hash', hash);
 }
 
 (async () => {
     const configPath = './config.subsplit-publish.json'; // core.getInput('config-path');
     const splitshPath = './temp/splitsh-lite';// core.getInput('splitsh-path');
     const splitshVersion  = 'v1.0.1'; // core.getInput('splitsh-version');
+    const origin = 'origin';
+    const branch = 'main';
 
     if ( ! fs.existsSync(splitshPath)) {
         await downloadSplitsh(splitshPath, splitshVersion);
@@ -79,7 +84,7 @@ async function publishSubSplit(name, directory) {
 
     await Promise.all(subSplits.map(async (split) => {
         await ensureRemoteExists(split.name, split.target);
-        await publishSubSplit(split.name, split.directory);
+        await publishSubSplit(splitshPath, origin, branch, split.name, split.directory);
     }));
 })().catch(error => {
     console.log('Something went wrong...');
