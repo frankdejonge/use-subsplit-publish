@@ -46,7 +46,6 @@ async function downloadSplitsh(splitshPath, splitshVersion) {
     let url = `https://github.com/splitsh/lite/releases/download/${splitshVersion}/${platform}.tar.gz`;
     await exec(`wget -O ${downloadPath} ${url}`);
     await exec(`tar -zxpf ${downloadPath} --directory ${downloadDir}`);
-    console.log(downloadDir);
     await exec(`chmod +x ${downloadDir}splitsh-lite`);
     await exec(`mv ${downloadDir}splitsh-lite ${splitshPath}`);
     ensureDirIsRemoved(downloadDir);
