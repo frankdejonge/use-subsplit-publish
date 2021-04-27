@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish Sub-split
     steps:
+      - uses: actions/checkout@v1
       - uses: frankdejonge/use-github-token@1.0.1
         with:
           authentication: 'frankdejonge:${{ secrets.PERSONAL_GITHUB_TOKEN }}'
@@ -25,8 +26,6 @@ jobs:
             ${{ runner.os }}-splitsh-d
       - name: debug cache
         run: ls -la ./.splitsh || true
-
-      - uses: actions/checkout@v1
 
       - uses: ./
         with:
