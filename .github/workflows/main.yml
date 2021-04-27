@@ -21,12 +21,6 @@ jobs:
         with:
           path: './.splitsh'
           key: '${{ runner.os }}-splitsh-d-101'
-          restore-keys: |
-            ${{ runner.os }}-splitsh-d-101
-            ${{ runner.os }}-splitsh-d
-      - name: debug cache
-        run: ls -la ./.splitsh || true
-
       - uses: ./
         with:
           source-branch: 'main'
