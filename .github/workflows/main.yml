@@ -18,7 +18,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: './.splitsh'
-            key: '${{ runner.os }}-splitsh-d-101'
+          key: '${{ runner.os }}-splitsh-d-101'
           restore-keys: |
             ${{ runner.os }}-splitsh-d-101
             ${{ runner.os }}-splitsh-d
