@@ -20,7 +20,7 @@ jobs:
           path: './.splitsh'
           key: '${{ runner.os }}-splitsh-d-101'
       - name: debug cache
-        run: ls -la ./.splitsh
+        run: ls -la ./.splitsh || true
 
       - uses: actions/checkout@v1
 
