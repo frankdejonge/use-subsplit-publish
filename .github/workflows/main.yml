@@ -15,6 +15,7 @@ jobs:
           user_name: 'Frank de Jonge'
           user_email: 'info@frenky.net'
       - name: Cache splitsh-lite
+        id: splitsh-cache
         uses: actions/cache@v2
         with:
           path: './.splitsh'
