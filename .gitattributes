@@ -1,0 +1,4 @@
+/.github export-ignore
+/.editorconfig
+/config.subsplit-publish.json
+/index.js
