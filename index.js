@@ -75,7 +75,7 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
 
 (async () => {
     const configPath = core.getInput('config-path');
-    let splitPath = path.resolve(process.cwd(), core.getInput('splitsh-path'));
+    const splitshPath = path.resolve(process.cwd(), core.getInput('splitsh-path'));
     const splitshVersion = core.getInput('splitsh-version');
     const origin = core.getInput('origin-remote');
     const branch = core.getInput('source-branch');
