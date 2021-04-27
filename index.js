@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const github = require('@actions/github');
 const exec = require('@actions/exec').exec;
 const fs = require('fs');
 const path = require('path');
@@ -76,6 +77,9 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
 }
 
 (async () => {
+    const context = github.context;
+    core.info(`event name: ${context.event_name}`);
+
     const configPath = core.getInput('config-path');
     const splitshPath = path.resolve(process.cwd(), core.getInput('splitsh-path'));
     const splitshVersion = core.getInput('splitsh-version');
