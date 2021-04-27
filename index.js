@@ -78,8 +78,6 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
 
 (async () => {
     const context = github.context;
-    core.info(`event name: ${context.event_name}`);
-
     const configPath = core.getInput('config-path');
     const splitshPath = path.resolve(process.cwd(), core.getInput('splitsh-path'));
     const splitshVersion = core.getInput('splitsh-version');
@@ -96,10 +94,12 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
     let subSplits = configOptions['sub-splits'];
     console.log(subSplits);
 
-    await Promise.all(subSplits.map(async (split) => {
-        await ensureRemoteExists(split.name, split.target);
-        await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
-    }));
+    if (context.eventName === 'push') {
+        await Promise.all(subSplits.map(async (split) => {
+            await ensureRemoteExists(split.name, split.target);
+            await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
+        }));
+    }
 })().catch(error => {
     console.log('Something went wrong...');
     core.setFailed(error.message);
