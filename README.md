@@ -59,7 +59,7 @@ on:
       - main
 
 jobs:
-  use_ssh_agent:
+  publis_sub_splits:
     runs-on: ubuntu-latest
     name: Publish Sub-split
     steps:

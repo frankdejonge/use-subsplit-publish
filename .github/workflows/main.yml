@@ -4,7 +4,7 @@ on:
       - main
 
 jobs:
-  use_ssh_agent:
+  publish_sub_splits:
     runs-on: ubuntu-latest
     name: Publish Sub-split
     steps:
