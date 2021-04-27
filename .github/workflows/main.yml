@@ -9,6 +9,9 @@ jobs:
     name: Publish Sub-split
     steps:
       - uses: actions/checkout@v1
+        with:
+          fetch-depth: '0'
+          persist-credentials: 'false'
       - uses: frankdejonge/use-github-token@1.0.1
         with:
           authentication: 'frankdejonge:${{ secrets.PERSONAL_GITHUB_TOKEN }}'
