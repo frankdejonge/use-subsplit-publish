@@ -10,8 +10,7 @@ inputs:
         required: false
     splitsh-path:
         description: 'Path to install splitsh-lite'
-        default: '~/splitsh-lite'
-        required: false
+        required: true
     origin-remote:
         description: 'Name of the origin remote'
         default: 'origin'
