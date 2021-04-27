@@ -17,8 +17,10 @@ jobs:
       - name: Cache splitsh-lite
         uses: actions/cache@v2
         with:
-          path: './.splitsh/'
-          key: '${{ runner.os }}-splitsh-101'
+          path: './.splitsh'
+          key: '${{ runner.os }}-splitsh-d-101'
+      - name: debug cache
+        run: ls -la ./.splitsh
 
       - uses: actions/checkout@v1
 
