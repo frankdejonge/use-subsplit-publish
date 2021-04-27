@@ -26,10 +26,12 @@ function ensureDirIsRemoved(path) {
 function ensureFileIsRemoved(path) {
     try {
         fs.unlinkSync(path);
+        console.log(`path was removed: ${path}`);
     } catch (err) {
         if (err.code !== 'ENOENT') {
             throw err;
         }
+        console.log(`path did not exist: ${path}`);
     }
 }
 
