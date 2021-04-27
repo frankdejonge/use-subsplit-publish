@@ -17,7 +17,7 @@ jobs:
       - name: Cache splitsh-lite
         uses: actions/cache@v2
         with:
-          path: '~/splitsh-lite'
+          path: '~/.splitsh/'
           key: '${{ runner.os }}-splitsh'
 
       - uses: actions/checkout@v1
@@ -26,5 +26,5 @@ jobs:
         with:
           source-branch: 'main'
           config-path: './config.subsplit-publish.json'
-          splitsh-path: '~/splitsh-lite'
+          splitsh-path: '~/.splitsh/splitsh-lite'
           splitsh-version: 'v1.0.1'
