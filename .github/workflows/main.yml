@@ -1,4 +1,7 @@
 on:
+  create:
+    tags:
+      - '*'
   push:
     branches:
       - main

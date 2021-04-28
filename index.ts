@@ -1,10 +1,11 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const exec = require('@actions/exec').exec;
-const fs = require('fs');
-const path = require('path');
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import { exec } from '@actions/exec';
+import { PushEvent, CreateEvent } from '@octokit/webhooks-types'
+import * as fs from 'fs';
+import * as path from 'path';
 
-function ensureDirExists(path) {
+function ensureDirExists(path): void {
     try {
         fs.mkdirSync(path);
     } catch (err) {
@@ -16,7 +17,7 @@ function ensureDirExists(path) {
 
 function ensureDirIsRemoved(path) {
     try {
-        fs.rmdirSync(path, { recursive: true, force: true });
+        fs.rmdirSync(path, { recursive: true });
     } catch (err) {
         if (err.code !== 'ENOENT') {
             throw err;
@@ -84,21 +85,27 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
     const origin = core.getInput('origin-remote');
     const branch = core.getInput('source-branch');
 
-    console.log('checking if file exists' + splitshPath);
     if ( ! fs.existsSync(splitshPath)) {
-        console.log('file does not exist');
         await downloadSplitsh(splitshPath, splitshVersion);
     }
 
-    let configOptions = JSON.parse(fs.readFileSync(configPath));
+    let configOptions = JSON.parse(fs.readFileSync(configPath).toString());
     let subSplits = configOptions['sub-splits'];
     console.log(subSplits);
 
-    if (context.eventName === 'push') {
+    if (context.eventName === "push") {
+        let event = context.payload as PushEvent;
+        console.log(event);
         await Promise.all(subSplits.map(async (split) => {
             await ensureRemoteExists(split.name, split.target);
             await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
         }));
+    } else if (context.eventName === "create") {
+        let event = context.payload as CreateEvent;
+
+        if (event.ref_type === "tag") {
+            console.log('tag event', event);
+        }
     }
 })().catch(error => {
     console.log('Something went wrong...');
