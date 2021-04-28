@@ -133,11 +133,8 @@ async function commitHashForTag(tag: string): Promise<string> {
 
             await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
             await exec('git', ['tag', '-a', tag, hash, '-m', `"Tag: ${tag}"`], { cwd: clonePath});
+            await exec('git', ['push', '--tags'], { cwd: clonePath});
         }));
-
-        // let hash = await captureExecOutput(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`]);
-
-        // git show-ref <tag> -s
     }
 })().catch(error => {
     console.log('Something went wrong...');
