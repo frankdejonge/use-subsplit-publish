@@ -81,7 +81,7 @@ async function captureExecOutput(command: string, args: string[]): Promise<strin
         }
     });
 
-    return output;
+    return output.trim();
 }
 
 async function publishSubSplit(binary, origin, target, branch, name, directory): Promise<void> {
@@ -128,7 +128,7 @@ async function commitHashForTag(tag: string): Promise<string> {
         await Promise.all(subSplits.map(async (split) => {
             let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
             console.log('hash from commit hash origin', hash);
-            let clonePath = `./.repos/${split.name}`;
+            let clonePath = `./.repos/${split.name}/`;
             fs.mkdirSync(clonePath, { recursive: true});
 
             await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
