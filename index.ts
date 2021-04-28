@@ -116,25 +116,28 @@ async function commitHashForTag(tag: string): Promise<string> {
         await Promise.all(subSplits.map(async (split) => {
             await ensureRemoteExists(split.name, split.target);
             await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
-            let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/0.0.1-alpha.1`]);
-            console.log('hash from commit hash origin', hash);
         }));
     } else if (context.eventName === "create") {
         let event = context.payload as CreateEvent;
-        let commitHash = await commitHashForTag(event.ref);
-        let splitToHash = new Map<string, string>();
+        let tag = event.ref;
+
+        if (event.ref_type !== "tag") {
+            return;
+        }
 
         await Promise.all(subSplits.map(async (split) => {
+            let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
+            console.log('hash from commit hash origin', hash);
+            let clonePath = `./.repos/${split.name}`;
+            fs.mkdirSync(clonePath);
 
+            await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
+            await exec('git', ['tag', '-a', tag, hash], { cwd: clonePath});
         }));
 
         // let hash = await captureExecOutput(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`]);
 
         // git show-ref <tag> -s
-
-        if (event.ref_type === "tag") {
-            console.log('tag event', event);
-        }
     }
 })().catch(error => {
     console.log('Something went wrong...');
