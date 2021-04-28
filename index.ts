@@ -129,7 +129,7 @@ async function commitHashForTag(tag: string): Promise<string> {
             let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
             console.log('hash from commit hash origin', hash);
             let clonePath = `./.repos/${split.name}`;
-            fs.mkdirSync(clonePath);
+            fs.mkdirSync(clonePath, { recursive: true});
 
             await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
             await exec('git', ['tag', '-a', tag, hash], { cwd: clonePath});
