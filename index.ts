@@ -5,6 +5,14 @@ import { PushEvent, CreateEvent } from '@octokit/webhooks-types'
 import * as fs from 'fs';
 import * as path from 'path';
 
+interface subsplit {
+    name: string,
+    directory: string,
+    target: string,
+}
+
+type subsplits = subsplit[];
+
 function ensureDirExists(path): void {
     try {
         fs.mkdirSync(path);
@@ -28,16 +36,14 @@ function ensureDirIsRemoved(path) {
 function ensureFileIsRemoved(path) {
     try {
         fs.unlinkSync(path);
-        console.log(`path was removed: ${path}`);
     } catch (err) {
         if (err.code !== 'ENOENT') {
             throw err;
         }
-        console.log(`path did not exist: ${path}`);
     }
 }
 
-async function downloadSplitsh(splitshPath, splitshVersion) {
+async function downloadSplitsh(splitshPath, splitshVersion): Promise<void> {
     let splitshDir = path.dirname(splitshPath);
     ensureDirExists(splitshDir);
     ensureFileIsRemoved(splitshPath);
@@ -55,7 +61,7 @@ async function downloadSplitsh(splitshPath, splitshVersion) {
     ensureDirIsRemoved(downloadDir);
 }
 
-async function ensureRemoteExists(name, target) {
+async function ensureRemoteExists(name, target): Promise<void> {
     try {
         await exec('git', ['remote', 'add', name, target]);
     } catch (e) {
@@ -65,16 +71,27 @@ async function ensureRemoteExists(name, target) {
     }
 }
 
-async function publishSubSplit(binary, origin, target, branch, name, directory) {
-    let hash = '';
-    await exec(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`], {
+async function captureExecOutput(command: string, args: string[]): Promise<string> {
+    let output = '';
+    await exec(command, args, {
         listeners: {
-            stdout: (data) => {
-                hash += data.toString();
+            stdout: (data: Buffer) => {
+                output += data.toString();
             }
         }
     });
+
+    return output;
+}
+
+async function publishSubSplit(binary, origin, target, branch, name, directory): Promise<void> {
+    let hash = await captureExecOutput(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`]);
+    console.log(name, directory, hash);
     await exec('git', ['push', target, `${hash.trim()}:refs/heads/${branch}`, '-f']);
+}
+
+async function commitHashForTag(tag: string): Promise<string> {
+    return await captureExecOutput('git', ['show-ref', tag, '-s']);
 }
 
 (async () => {
@@ -90,7 +107,7 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
     }
 
     let configOptions = JSON.parse(fs.readFileSync(configPath).toString());
-    let subSplits = configOptions['sub-splits'];
+    let subSplits = configOptions['sub-splits'] as subsplits;
     console.log(subSplits);
 
     if (context.eventName === "push") {
@@ -99,9 +116,21 @@ async function publishSubSplit(binary, origin, target, branch, name, directory) 
         await Promise.all(subSplits.map(async (split) => {
             await ensureRemoteExists(split.name, split.target);
             await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
+            let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=${event.after}`]);
+            console.log('hash from commit hash origin', hash);
         }));
     } else if (context.eventName === "create") {
         let event = context.payload as CreateEvent;
+        let commitHash = await commitHashForTag(event.ref);
+        let splitToHash = new Map<string, string>();
+
+        await Promise.all(subSplits.map(async (split) => {
+
+        }));
+
+        // let hash = await captureExecOutput(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`]);
+
+        // git show-ref <tag> -s
 
         if (event.ref_type === "tag") {
             console.log('tag event', event);
