@@ -116,7 +116,7 @@ async function commitHashForTag(tag: string): Promise<string> {
         await Promise.all(subSplits.map(async (split) => {
             await ensureRemoteExists(split.name, split.target);
             await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
-            let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=${event.after}`]);
+            let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=refs/${event.after}`]);
             console.log('hash from commit hash origin', hash);
         }));
     } else if (context.eventName === "create") {
