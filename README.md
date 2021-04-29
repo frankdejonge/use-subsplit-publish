@@ -85,3 +85,17 @@ jobs:
           splitsh-path: './.splitsh/splitsh-lite'
           splitsh-version: 'v1.0.1'
 ```
+
+## Tag Management
+
+This action propagated tags when it's configured in the action.
+
+```yaml
+on:
+  create:
+    tags:
+      - '*'
+  delete:
+    tags:
+      - '*'
+```
