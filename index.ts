@@ -170,7 +170,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
             await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
 
             if (await tagExists(tag, clonePath)) {
-                await exec('git', ['push', '--delete', branch, tag], { cwd: clonePath});
+                await exec('git', ['push', '--delete', origin, tag], { cwd: clonePath});
             }
         }));
     }
