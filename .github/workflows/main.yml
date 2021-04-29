@@ -2,6 +2,9 @@ on:
   create:
     tags:
       - '*'
+  delete:
+    tags:
+      - '*'
   push:
     paths:
       - '.github/workflows/**/*'
