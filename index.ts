@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { exec } from '@actions/exec';
-import { PushEvent, CreateEvent } from '@octokit/webhooks-types'
+import { PushEvent, CreateEvent, DeleteEvent } from '@octokit/webhooks-types'
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -90,8 +90,16 @@ async function publishSubSplit(binary, origin, target, branch, name, directory):
     await exec('git', ['push', target, `${hash.trim()}:refs/heads/${branch}`, '-f']);
 }
 
-async function commitHashForTag(tag: string): Promise<string> {
-    return await captureExecOutput('git', ['show-ref', tag, '-s']);
+async function tagExists(tag: string, directory: string): Promise<boolean> {
+    try {
+        let code = await exec('git', ['show-ref', '--tags', '--quiet', '--verify', '--', `"refs/tags/${tag}"`], {cwd: directory});
+
+        return code === 0;
+    } catch (err) {
+        return false;
+    }
+
+    // git show-ref --tags --quiet --verify -- "refs/tags/0.0.1-alpha.9
 }
 
 (async () => {
@@ -134,6 +142,26 @@ async function commitHashForTag(tag: string): Promise<string> {
             await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
             await exec('git', ['tag', '-a', tag, hash, '-m', `"Tag: ${tag}"`], { cwd: clonePath});
             await exec('git', ['push', '--tags'], { cwd: clonePath});
+        }));
+    } else if (context.eventName === "delete") {
+        let event = context.payload as DeleteEvent;
+        let tag = event.ref;
+
+        if (event.ref_type !== "tag") {
+            return;
+        }
+
+        await Promise.all(subSplits.map(async (split) => {
+            let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
+            console.log('hash from commit hash origin', hash);
+            let clonePath = `./.repos/${split.name}/`;
+            fs.mkdirSync(clonePath, { recursive: true});
+
+            await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
+
+            if (await tagExists(tag, clonePath)) {
+                await exec('git', ['push', '--delete', branch, tag], { cwd: clonePath});
+            }
         }));
     }
 })().catch(error => {
