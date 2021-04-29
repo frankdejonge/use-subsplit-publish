@@ -152,8 +152,6 @@ async function tagExists(tag: string, directory: string): Promise<boolean> {
         }
 
         await Promise.all(subSplits.map(async (split) => {
-            let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
-            console.log('hash from commit hash origin', hash);
             let clonePath = `./.repos/${split.name}/`;
             fs.mkdirSync(clonePath, { recursive: true});
 
