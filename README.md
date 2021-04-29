@@ -99,3 +99,5 @@ on:
     tags:
       - '*'
 ```
+
+For each sub-split, the tags are propagated when the target commit hash has no prior tag.
