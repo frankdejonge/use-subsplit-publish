@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { exec } from '@actions/exec';
+import { exec, ExecOptions } from '@actions/exec';
 import { PushEvent, CreateEvent, DeleteEvent } from '@octokit/webhooks-types'
 import * as fs from 'fs';
 import * as path from 'path';
@@ -71,14 +71,16 @@ async function ensureRemoteExists(name, target): Promise<void> {
     }
 }
 
-async function captureExecOutput(command: string, args: string[]): Promise<string> {
+async function captureExecOutput(command: string, args: string[], options?: ExecOptions): Promise<string> {
     let output = '';
+    options = options || {};
     await exec(command, args, {
         listeners: {
             stdout: (data: Buffer) => {
                 output += data.toString();
             }
-        }
+        },
+        ...options
     });
 
     return output.trim();
@@ -100,6 +102,12 @@ async function tagExists(tag: string, directory: string): Promise<boolean> {
     }
 
     // git show-ref --tags --quiet --verify -- "refs/tags/0.0.1-alpha.9
+}
+
+async function commitHashHasTag(hash: string, clonePath: string) {
+    let output = await captureExecOutput('git', ['tag', '--points-at', hash], { cwd: clonePath});
+
+    return output !== '';
 }
 
 (async () => {
@@ -140,8 +148,12 @@ async function tagExists(tag: string, directory: string): Promise<boolean> {
             fs.mkdirSync(clonePath, { recursive: true});
 
             await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
-            await exec('git', ['tag', '-a', tag, hash, '-m', `"Tag: ${tag}"`], { cwd: clonePath});
-            await exec('git', ['push', '--tags'], { cwd: clonePath});
+            let shouldSkipTagging = await commitHashHasTag(hash, clonePath);
+
+            if (shouldSkipTagging === false) {
+                await exec('git', ['tag', '-a', tag, hash, '-m', `"Tag: ${tag}"`], {cwd: clonePath});
+                await exec('git', ['push', '--tags'], {cwd: clonePath});
+            }
         }));
     } else if (context.eventName === "delete") {
         let event = context.payload as DeleteEvent;
