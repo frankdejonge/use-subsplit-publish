@@ -125,11 +125,10 @@ async function commitHashHasTag(hash: string, clonePath: string) {
 
     let configOptions = JSON.parse(fs.readFileSync(configPath).toString());
     let subSplits = configOptions['sub-splits'] as subsplits;
-    console.log(subSplits);
+    console.table(subSplits);
 
     if (context.eventName === "push") {
         let event = context.payload as PushEvent;
-        console.log(event);
         await Promise.all(subSplits.map(async (split) => {
             await ensureRemoteExists(split.name, split.target);
             await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
@@ -176,6 +175,5 @@ async function commitHashHasTag(hash: string, clonePath: string) {
         }));
     }
 })().catch(error => {
-    console.log('Something went wrong...');
-    core.setFailed(error.message);
+    core.setFailed(error);
 });
