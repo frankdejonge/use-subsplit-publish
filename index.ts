@@ -105,7 +105,8 @@ async function tagExists(tag: string, directory: string): Promise<boolean> {
 }
 
 async function commitHashHasTag(hash: string, clonePath: string) {
-    let output = await captureExecOutput('git', ['tag', '--points-at', hash], { cwd: clonePath});
+    let output = await captureExecOutput('git', ['tag', '--points-at', hash], { cwd: clonePath });
+    console.log(hash, 'points-at', output);
 
     return output !== '';
 }
