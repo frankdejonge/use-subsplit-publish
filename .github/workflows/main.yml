@@ -1,3 +1,4 @@
+name: Sub-split Publishing
 on:
   create:
     tags:
