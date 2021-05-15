@@ -1,5 +1,6 @@
 /.github export-ignore
 /.editorconfig
 /config.subsplit-publish.json
-/index.ts
+/test-cases
 /tsconfig.json
+/**/*.ts

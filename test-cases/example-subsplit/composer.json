@@ -1,0 +1,5 @@
+{
+    "require": {
+        "some/dependency": "^2.0"
+    }
+}

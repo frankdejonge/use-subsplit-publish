@@ -4,6 +4,7 @@ import { exec, ExecOptions } from '@actions/exec';
 import { PushEvent, CreateEvent, DeleteEvent } from '@octokit/webhooks-types'
 import * as fs from 'fs';
 import * as path from 'path';
+import { verifyDependencies } from './compare-dependencies';
 
 interface subsplit {
     name: string,
@@ -12,6 +13,13 @@ interface subsplit {
 }
 
 type subsplits = subsplit[];
+
+type configurationOptions = {
+    'sub-splits': subsplits,
+    'dependencies-must-satisfy'?: {
+        [index: string]: string,
+    }
+}
 
 function ensureDirExists(path): void {
     try {
@@ -100,8 +108,6 @@ async function tagExists(tag: string, directory: string): Promise<boolean> {
     } catch (err) {
         return false;
     }
-
-    // git show-ref --tags --quiet --verify -- "refs/tags/0.0.1-alpha.9
 }
 
 async function commitHashHasTag(hash: string, clonePath: string) {
@@ -123,12 +129,17 @@ async function commitHashHasTag(hash: string, clonePath: string) {
         await downloadSplitsh(splitshPath, splitshVersion);
     }
 
-    let configOptions = JSON.parse(fs.readFileSync(configPath).toString());
-    let subSplits = configOptions['sub-splits'] as subsplits;
+    let configOptions = JSON.parse(fs.readFileSync(configPath).toString()) as configurationOptions;
+    let subSplits = configOptions['sub-splits'];
     console.table(subSplits);
 
     if (context.eventName === "push") {
         let event = context.payload as PushEvent;
+
+        if (configOptions.hasOwnProperty('dependencies-must-satisfy') && configOptions['dependencies-must-satisfy']) {
+            await verifyDependencies(subSplits.map(s => s.directory), configOptions['dependencies-must-satisfy']);
+        }
+
         await Promise.all(subSplits.map(async (split) => {
             await ensureRemoteExists(split.name, split.target);
             await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
