@@ -140,8 +140,11 @@ async function commitHashHasTag(hash: string, clonePath: string) {
             await verifyDependencies(subSplits.map(s => s.directory), configOptions['dependencies-must-satisfy']);
         }
 
-        await Promise.all(subSplits.map(async (split) => {
+        for (let split of subSplits) {
             await ensureRemoteExists(split.name, split.target);
+        }
+
+        await Promise.all(subSplits.map(async (split) => {
             await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
         }));
     } else if (context.eventName === "create") {
