@@ -1,5 +1,6 @@
 name: 'Sub-split Publish'
 description: 'Publish git repository sub-splits using splish-lite'
+
 inputs:
     config-path:
         required: true
