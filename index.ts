@@ -10,6 +10,7 @@ interface subsplit {
     name: string,
     directory: string,
     target: string,
+    'target-branch'?: string,
 }
 
 type subsplits = subsplit[];
@@ -145,7 +146,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
         }
 
         await Promise.all(subSplits.map(async (split) => {
-            await publishSubSplit(splitshPath, origin, split.name, branch, split.name, split.directory);
+            await publishSubSplit(splitshPath, origin, split.name, split['target-branch'] || branch, split.name, split.directory);
         }));
     } else if (context.eventName === "create") {
         let event = context.payload as CreateEvent;
