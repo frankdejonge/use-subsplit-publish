@@ -95,8 +95,8 @@ async function captureExecOutput(command: string, args: string[], options?: Exec
     return output.trim();
 }
 
-async function publishSubSplit(binary, origin, target, branch, name, directory): Promise<void> {
-    let hash = await captureExecOutput(binary, [`--prefix=${directory}`, `--origin=${origin}/${branch}`]);
+async function publishSubSplit(binary, origin, originBranch, target, branch, name, directory): Promise<void> {
+    let hash = await captureExecOutput(binary, [`--prefix=${directory}`, `--origin=${origin}/${originBranch}`]);
     console.log(name, directory, hash);
     await exec('git', ['push', target, `${hash.trim()}:refs/heads/${branch}`, '-f']);
 }
@@ -146,7 +146,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
         }
 
         await Promise.all(subSplits.map(async (split) => {
-            await publishSubSplit(splitshPath, origin, split.name, split['target-branch'] || branch, split.name, split.directory);
+            await publishSubSplit(splitshPath, origin, branch, split.name, split['target-branch'] || branch, split.name, split.directory);
         }));
     } else if (context.eventName === "create") {
         let event = context.payload as CreateEvent;
