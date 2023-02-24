@@ -1,10 +1,15 @@
 {
-
     "sub-splits": [
         {
             "name": "workflows",
             "directory": ".github/workflows",
             "target": "git@github.com:frankdejonge/example-subsplit-publish.git"
+        },
+        {
+            "name": "test-cases",
+            "directory": "test-cases",
+            "target": "git@github.com:frankdejonge/example-subsplit-publish.git",
+            "target-branch": "test-cases-branch"
         }
     ]
 }

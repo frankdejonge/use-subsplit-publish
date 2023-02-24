@@ -13,6 +13,7 @@ on:
       - 'action.yml'
     branches:
       - main
+      - feature/configure-destination-branch
 
 jobs:
   publish_sub_splits:
