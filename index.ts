@@ -153,7 +153,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
             return;
         }
 
-        await Promise.all(subSplits.map(async (split) => {
+        for (let split of subSplits) {
             let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
             console.log('hash from commit hash origin', hash);
             let clonePath = `./.repos/${split.name}/`;
@@ -165,7 +165,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
                 await exec('git', ['tag', '-a', tag, hash, '-m', `"Tag: ${tag}"`], {cwd: clonePath});
                 await exec('git', ['push', '--tags'], {cwd: clonePath});
             }
-        }));
+        }
     } else if (context.eventName === "delete") {
         let event = context.payload as DeleteEvent;
         let tag = event.ref;
@@ -174,7 +174,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
             return;
         }
 
-        await Promise.all(subSplits.map(async (split) => {
+        for (let split of subSplits) {
             let clonePath = `./.repos/${split.name}/`;
             fs.mkdirSync(clonePath, {recursive: true});
 
@@ -183,7 +183,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
             if (await tagExists(tag, clonePath)) {
                 await exec('git', ['push', '--delete', origin, tag], {cwd: clonePath});
             }
-        }));
+        }
     }
 })().catch(error => {
     core.setFailed(error);
