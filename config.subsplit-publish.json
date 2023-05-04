@@ -8,7 +8,7 @@
         {
             "name": "test-cases",
             "directory": "test-cases",
-            "target": "git@github.com:frankdejonge/example-subsplit-publish.git",
+            "target": "git@github.com:frankdejonge/another-example-subsplit-publish.git",
             "target-branch": "test-cases-branch"
         }
     ]
