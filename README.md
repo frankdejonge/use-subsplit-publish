@@ -78,7 +78,7 @@ jobs:
         with:
           path: './.splitsh'
           key: '${{ runner.os }}-splitsh-d-101'
-      - uses: ./
+      - uses: frankdejonge/use-subsplit-publish@1.0.0-beta.6
         with:
           source-branch: 'main'
           config-path: './config.subsplit-publish.json'
