@@ -1,10 +1,10 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { exec, ExecOptions } from '@actions/exec';
-import { PushEvent, CreateEvent, DeleteEvent } from '@octokit/webhooks-types'
+import {exec, ExecOptions} from '@actions/exec';
+import {CreateEvent, DeleteEvent, PushEvent} from '@octokit/webhooks-types'
 import * as fs from 'fs';
 import * as path from 'path';
-import { verifyDependencies } from './compare-dependencies';
+import {verifyDependencies} from './compare-dependencies';
 
 interface subsplit {
     name: string,
@@ -34,7 +34,7 @@ function ensureDirExists(path): void {
 
 function ensureDirIsRemoved(path) {
     try {
-        fs.rmdirSync(path, { recursive: true });
+        fs.rmdirSync(path, {recursive: true});
     } catch (err) {
         if (err.code !== 'ENOENT') {
             throw err;
@@ -74,7 +74,7 @@ async function ensureRemoteExists(name, target): Promise<void> {
     try {
         await exec('git', ['remote', 'add', name, target]);
     } catch (e) {
-        if ( ! e.message.match(/failed with exit code 3$/g)) {
+        if (!e.message.match(/failed with exit code 3$/g)) {
             throw e;
         }
     }
@@ -112,10 +112,10 @@ async function tagExists(tag: string, directory: string): Promise<boolean> {
 }
 
 async function commitHashHasTag(hash: string, clonePath: string) {
-    let output = await captureExecOutput('git', ['tag', '--points-at', hash], { cwd: clonePath });
+    let output = await captureExecOutput('git', ['tag', '--points-at', hash], {cwd: clonePath});
     console.log(hash, 'points-at', output);
 
-    return output !== '';
+    return output === '';
 }
 
 (async () => {
@@ -126,7 +126,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
     const origin = core.getInput('origin-remote');
     const branch = core.getInput('source-branch');
 
-    if ( ! fs.existsSync(splitshPath)) {
+    if (!fs.existsSync(splitshPath)) {
         await downloadSplitsh(splitshPath, splitshVersion);
     }
 
@@ -143,11 +143,8 @@ async function commitHashHasTag(hash: string, clonePath: string) {
 
         for (let split of subSplits) {
             await ensureRemoteExists(split.name, split.target);
-        }
-
-        await Promise.all(subSplits.map(async (split) => {
             await publishSubSplit(splitshPath, origin, branch, split.name, split['target-branch'] || branch, split.name, split.directory);
-        }));
+        }
     } else if (context.eventName === "create") {
         let event = context.payload as CreateEvent;
         let tag = event.ref;
@@ -160,12 +157,11 @@ async function commitHashHasTag(hash: string, clonePath: string) {
             let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
             console.log('hash from commit hash origin', hash);
             let clonePath = `./.repos/${split.name}/`;
-            fs.mkdirSync(clonePath, { recursive: true});
+            fs.mkdirSync(clonePath, {recursive: true});
 
-            await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
-            let shouldSkipTagging = await commitHashHasTag(hash, clonePath);
+            await exec('git', ['clone', split.target, '.'], {cwd: clonePath});
 
-            if (shouldSkipTagging === false) {
+            if (await commitHashHasTag(hash, clonePath)) {
                 await exec('git', ['tag', '-a', tag, hash, '-m', `"Tag: ${tag}"`], {cwd: clonePath});
                 await exec('git', ['push', '--tags'], {cwd: clonePath});
             }
@@ -180,12 +176,12 @@ async function commitHashHasTag(hash: string, clonePath: string) {
 
         await Promise.all(subSplits.map(async (split) => {
             let clonePath = `./.repos/${split.name}/`;
-            fs.mkdirSync(clonePath, { recursive: true});
+            fs.mkdirSync(clonePath, {recursive: true});
 
-            await exec('git', ['clone', split.target, '.'], { cwd: clonePath});
+            await exec('git', ['clone', split.target, '.'], {cwd: clonePath});
 
             if (await tagExists(tag, clonePath)) {
-                await exec('git', ['push', '--delete', origin, tag], { cwd: clonePath});
+                await exec('git', ['push', '--delete', origin, tag], {cwd: clonePath});
             }
         }));
     }
