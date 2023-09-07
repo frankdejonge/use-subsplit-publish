@@ -71,6 +71,7 @@ async function downloadSplitsh(splitshPath, splitshVersion): Promise<void> {
 }
 
 async function ensureRemoteExists(name, target): Promise<void> {
+    withRetries
     try {
         await exec('git', ['remote', 'add', name, target]);
     } catch (e) {
@@ -118,6 +119,24 @@ async function commitHashHasTag(hash: string, clonePath: string) {
     return output === '';
 }
 
+const withRetries = (max: number) => async (fn: () => Promise<void>): Promise<void> => {
+    let tries = 0;
+
+    while (true) {
+        tries++;
+
+        try {
+            await fn();
+        } catch (e) {
+            if (tries >= max) {
+                throw e;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+    }
+}
+
 (async () => {
     const context = github.context;
     const configPath = core.getInput('config-path');
@@ -125,6 +144,7 @@ async function commitHashHasTag(hash: string, clonePath: string) {
     const splitshVersion = core.getInput('splitsh-version');
     const origin = core.getInput('origin-remote');
     const branch = core.getInput('source-branch');
+    const retry = withRetries(Number(core.getInput('max-tries')));
 
     if (!fs.existsSync(splitshPath)) {
         await downloadSplitsh(splitshPath, splitshVersion);
@@ -135,15 +155,20 @@ async function commitHashHasTag(hash: string, clonePath: string) {
     console.table(subSplits);
 
     if (context.eventName === "push") {
-        let event = context.payload as PushEvent;
+        // let event = context.payload as PushEvent;
 
         if (configOptions.hasOwnProperty('dependencies-must-satisfy') && configOptions['dependencies-must-satisfy']) {
             await verifyDependencies(subSplits.map(s => s.directory), configOptions['dependencies-must-satisfy']);
         }
 
         for (let split of subSplits) {
-            await ensureRemoteExists(split.name, split.target);
-            await publishSubSplit(splitshPath, origin, branch, split.name, split['target-branch'] || branch, split.name, split.directory);
+            await retry(async () => {
+                await ensureRemoteExists(split.name, split.target);
+            });
+
+            await retry(async () => {
+                await publishSubSplit(splitshPath, origin, branch, split.name, split['target-branch'] || branch, split.name, split.directory);
+            });
         }
     } else if (context.eventName === "create") {
         let event = context.payload as CreateEvent;
@@ -154,16 +179,25 @@ async function commitHashHasTag(hash: string, clonePath: string) {
         }
 
         for (let split of subSplits) {
-            let hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
+            let hash = undefined;
+            await retry(async () => {
+                hash = await captureExecOutput(splitshPath, [`--prefix=${split.directory}`, `--origin=tags/${tag}`]);
+            });
             console.log('hash from commit hash origin', hash);
             let clonePath = `./.repos/${split.name}/`;
             fs.mkdirSync(clonePath, {recursive: true});
 
-            await exec('git', ['clone', split.target, '.'], {cwd: clonePath});
+            await retry(async () => {
+                await exec('git', ['clone', split.target, '.'], {cwd: clonePath});
+            });
 
             if (await commitHashHasTag(hash, clonePath)) {
-                await exec('git', ['tag', '-a', tag, hash, '-m', `"Tag: ${tag}"`], {cwd: clonePath});
-                await exec('git', ['push', '--tags'], {cwd: clonePath});
+                await retry(async () => {
+                    await exec('git', ['tag', '-a', tag, hash, '-m', `"Tag: ${tag}"`], {cwd: clonePath});
+                });
+                await retry(async () => {
+                    await exec('git', ['push', '--tags'], {cwd: clonePath});
+                });
             }
         }
     } else if (context.eventName === "delete") {
@@ -178,10 +212,14 @@ async function commitHashHasTag(hash: string, clonePath: string) {
             let clonePath = `./.repos/${split.name}/`;
             fs.mkdirSync(clonePath, {recursive: true});
 
-            await exec('git', ['clone', split.target, '.'], {cwd: clonePath});
+            await retry(async () => {
+                await exec('git', ['clone', split.target, '.'], {cwd: clonePath});
+            });
 
             if (await tagExists(tag, clonePath)) {
-                await exec('git', ['push', '--delete', origin, tag], {cwd: clonePath});
+                await retry(async () => {
+                    await exec('git', ['push', '--delete', origin, tag], {cwd: clonePath});
+                });
             }
         }
     }

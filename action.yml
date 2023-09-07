@@ -16,6 +16,10 @@ inputs:
         description: 'Name of the origin remote'
         default: 'origin'
         required: false
+    max-tries:
+        description: 'Amount of retries per call that can fail (splish/git)'
+        default: '5'
+        required: false
     source-branch:
         description: 'Branch to split from'
         required: true
