@@ -71,7 +71,6 @@ async function downloadSplitsh(splitshPath, splitshVersion): Promise<void> {
 }
 
 async function ensureRemoteExists(name, target): Promise<void> {
-    withRetries
     try {
         await exec('git', ['remote', 'add', name, target]);
     } catch (e) {
@@ -126,7 +125,7 @@ const withRetries = (max: number) => async (fn: () => Promise<void>): Promise<vo
         tries++;
 
         try {
-            await fn();
+            return await fn();
         } catch (e) {
             if (tries >= max) {
                 throw e;
