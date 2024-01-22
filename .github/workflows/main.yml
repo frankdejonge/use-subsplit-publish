@@ -31,7 +31,7 @@ jobs:
           user_email: 'info@frenky.net'
       - name: Cache splitsh-lite
         id: splitsh-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: './.splitsh'
           key: '${{ runner.os }}-splitsh-d-101'
