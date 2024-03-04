@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: '0'
           persist-credentials: 'false'
-      - uses: frankdejonge/use-github-token@1.0.2
+      - uses: frankdejonge/use-github-token@1.1.0
         with:
           authentication: 'frankdejonge:${{ secrets.PERSONAL_GITHUB_TOKEN }}'
           user_name: 'Frank de Jonge'
