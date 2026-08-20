@@ -34,7 +34,7 @@ function ensureDirExists(path): void {
 
 function ensureDirIsRemoved(path) {
     try {
-        fs.rmdirSync(path, {recursive: true});
+        fs.rmSync(path, {recursive: true});
     } catch (err) {
         if (err.code !== 'ENOENT') {
             throw err;

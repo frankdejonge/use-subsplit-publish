@@ -1,6 +1,14 @@
 {
     "compilerOptions": {
         "target": "es2022",
-        "moduleResolution": "node"
-    }
+        "lib": ["es2022"],
+        "strict": false,
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "types": ["node"],
+        "noEmit": true
+    },
+    "include": ["index.ts", "compare-dependencies.ts", "compare-dependencies.test.ts"]
 }

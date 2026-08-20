@@ -40,4 +40,4 @@ jobs:
           source-branch: 'main'
           config-path: './config.subsplit-publish.json'
           splitsh-path: './.splitsh/splitsh-lite'
-          splitsh-version: 'v1.0.1'
+          splitsh-version: 'v2.0.0'

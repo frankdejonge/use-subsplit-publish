@@ -1,26 +1,29 @@
 {
   "private": true,
   "engines": {
-    "node": "16"
+    "node": ">=20"
   },
   "scripts": {
-    "package": "ncc build index.ts -C -o dist --minify",
-    "test": "jest"
+    "lint": "tsc --noEmit",
+    "test": "tsx --test compare-dependencies.test.ts",
+    "prepackage": "npm run lint",
+    "package": "tsdown",
+    "prepare": "husky"
   },
   "dependencies": {
-    "@actions/core": "^1.10.1",
-    "@actions/exec": "^1.1.1",
-    "@actions/github": "^6.0.0",
-    "@octokit/webhooks": "^13.1.1"
+    "@actions/core": "^3.0.1",
+    "@actions/exec": "^3.0.0",
+    "@actions/github": "^9.1.1",
+    "@octokit/webhooks": "^14.2.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/node": "^20.12.2",
-    "@types/semver": "^7.5.8",
-    "@vercel/ncc": "^0.38.1",
-    "jest": "^29.7.0",
-    "semver": "^7.6.0",
-    "ts-jest": "^29.1.2",
-    "typescript": "^5.4.3"
+    "@octokit/webhooks-types": "^7.6.1",
+    "@types/node": "^26.2.0",
+    "@types/semver": "^7.8.0",
+    "husky": "^9.1.7",
+    "semver": "^7.8.5",
+    "tsdown": "^0.22.2",
+    "tsx": "^4.23.12",
+    "typescript": "^6.0.3"
   }
 }
